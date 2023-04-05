@@ -40,8 +40,7 @@ public class TicketService {
         //throw new Exception("Invalid stations");
         //Save the bookedTickets in the train Object
         //Also in the passenger Entity change the attribute bookedTickets by using the attribute bookingPersonId.
-       //And the end return the ticketId that has come from db
-
+        //And the end return the ticketId that has come from db
         Train train=trainRepository.findById(bookTicketEntryDto.getTrainId()).get();
         int bookedSeats=0;
         List<Ticket>booked=train.getBookedTickets();
@@ -72,11 +71,9 @@ public class TicketService {
                 break;
             }
         }
-
         if(x==-1||y==-1||y-x<0){
             throw new Exception("Invalid stations");
         }
-
         Ticket ticket=new Ticket();
         ticket.setPassengersList(passengerList);
         ticket.setFromStation(bookTicketEntryDto.getFromStation());
@@ -94,8 +91,10 @@ public class TicketService {
         Passenger passenger=passengerRepository.findById(bookTicketEntryDto.getBookingPersonId()).get();
         passenger.getBookedTickets().add(ticket);
 
+
         trainRepository.save(train);
 
         return ticketRepository.save(ticket).getTicketId();
+
     }
 }

@@ -25,32 +25,25 @@ public class TrainService {
     List<Train>trains=new ArrayList<>();
 
     public Integer addTrain(AddTrainEntryDto trainEntryDto){
-
-        //Add the train to the trainRepository
-        //and route String logic to be taken from the Problem statement.
-        //Save the train and return the trainId that is generated from the database.
         //Avoid using the lombok library
         Train train = new Train();
-        train.setDepartureTime(trainEntryDto.getDepartureTime());
         train.setNoOfSeats(trainEntryDto.getNoOfSeats());
-        //set the train route
-        List<Station> stationList = trainEntryDto.getStationRoute();
+
+        List<Station> list = trainEntryDto.getStationRoute();
         String route = "";
-        int n=1;
-        for(Station st : stationList){
-            if(stationList.size() != n) {
-                route += st + ",";
-                n++;
-            }
-            else{
-                route += st;
-            }
+
+        for(int i=0;i<list.size();i++){
+            if(i==list.size()-1)
+                route += list.get(i);
+            else
+                route += list.get(i) + ",";
         }
         train.setRoute(route);
-        trains.add(train);
-        trainRepository.save(train);
 
-        return train.getTrainId();
+        train.setDepartureTime(trainEntryDto.getDepartureTime());
+        trains.add(train);
+        return trainRepository.save(train).getTrainId();
+
     }
 
     public Integer calculateAvailableSeats(SeatAvailabilityEntryDto seatAvailabilityEntryDto){
@@ -63,7 +56,6 @@ public class TrainService {
         //even if that seat is booked post the destStation or before the boardingStation
         //Inshort : a train has totalNo of seats and there are tickets from and to different locations
         //We need to find out the available seats between the given 2 stations.
-
         Train train=trainRepository.findById(seatAvailabilityEntryDto.getTrainId()).get();
         List<Ticket>ticketList=train.getBookedTickets();
         String []trainRoot=train.getRoute().split(",");
@@ -95,10 +87,6 @@ public class TrainService {
     public Integer calculatePeopleBoardingAtAStation(Integer trainId,Station station) throws Exception{
 
         //We need to find out the number of people who will be boarding a train from a particular station
-        //if the trainId is not passing through that station
-        //throw new Exception("Train is not passing from this station");
-        //  in a happy case we need to find out the number of such people.
-
         Train train=trainRepository.findById(trainId).get();
         String reqStation=station.toString();
         String arr[]=train.getRoute().split(",");
@@ -130,16 +118,11 @@ public class TrainService {
 
 
         return noOfPassengers;
-
-
     }
 
     public Integer calculateOldestPersonTravelling(Integer trainId){
 
         //Throughout the journey of the train between any 2 stations
-        //We need to find out the age of the oldest person that is travelling the train
-        //If there are no people travelling in that train you can return 0
-
         Train train=trainRepository.findById(trainId).get();
         //We need to find out the age of the oldest person that is travelling the train
         int age= Integer.MIN_VALUE;
@@ -157,12 +140,6 @@ public class TrainService {
     }
 
     public List<Integer> trainsBetweenAGivenTime(Station station, LocalTime startTime, LocalTime endTime){
-
-        //When you are at a particular station you need to find out the number of trains that will pass through a given station
-        //between a particular time frame both start time and end time included.
-        //You can assume that the date change doesn't need to be done ie the travel will certainly happen with the same date (More details
-        //in problem statement)
-        //You can also assume the seconds and milli seconds value will be 0 in a LocalTime format.
 
         List<Integer> TrainList = new ArrayList<>();
         List<Train> trains = trainRepository.findAll();
